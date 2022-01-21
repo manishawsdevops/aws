@@ -1,0 +1,383 @@
+---
+    AWSTemplateFormatVersion: '2010-09-09'
+
+    Description: iProcure SecurityGroups Inbound and Outbound Rules
+
+    Parameters:
+
+        iproappsg:
+            Description: databridge security GroupId
+            Type: AWS::EC2::SecurityGroup::Id
+
+        iproapp2sg:
+            Description: endeca security GroupId
+            Type: AWS::EC2::SecurityGroup::Id
+        
+        iprowebsg:
+            Description: frontend security GroupId
+            Type: AWS::EC2::SecurityGroup::Id
+
+        iprodbsg:
+            Description: database security GroupId
+            Type: AWS::EC2::SecurityGroup::Id
+
+        publicelb:
+            Description: publicelb security GroupId
+            Type: AWS::EC2::SecurityGroup::Id
+
+        privateelb:
+            Description: privateelb security GroupId
+            Type: AWS::EC2::SecurityGroup::Id
+
+    Resources:
+      iprowebsgtodatabridge:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: iproappsg
+          ToPort: '80'
+          FromPort: '80'
+
+      iprowebsgtodatabase:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: iprodbsg
+          ToPort: '80'
+          FromPort: '80'
+
+      iprowebsgtopublicelb:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: publicelb
+          ToPort: '80'
+          FromPort: '80'
+
+      iprowebsgtoprivateelb:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: privateelb
+          ToPort: '80'
+          FromPort: '80'
+
+      iprowebsgtoprivateelb2:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: privateelb
+          ToPort: '5555'
+          FromPort: '5555'
+
+      iprowebasgtosg2ssl:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: iproappsg
+          ToPort: '443'
+          FromPort: '443'
+
+      iprowebasgtoprivateelbssl:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: privateelb
+          ToPort: '443'
+          FromPort: '443'
+
+      iprowebasgtopublicelbssl:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: publicelb
+          ToPort: '443'
+          FromPort: '443'
+
+      iprowebasgtooutbound2:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          FromPort: '8006'
+          ToPort: '8006'
+          DestinationSecurityGroupId:
+            Ref: iproapp2sg
+
+      iprowebasgtooutbound3:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          FromPort: '445'
+          ToPort: '445'
+          DestinationSecurityGroupId:
+            Ref: iproappsg
+
+      iprowebasgtooutbound4:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          FromPort: '15000'
+          ToPort: '15000'
+          DestinationSecurityGroupId:
+            Ref: iproapp2sg
+
+      iprowebasgtooutbound5:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          FromPort: '15000'
+          ToPort: '15000'
+          DestinationSecurityGroupId:
+            Ref: privateelb
+
+      iprowebasgtooutbound6:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          FromPort: '8585'
+          ToPort: '8585'
+          DestinationSecurityGroupId:
+            Ref: iproappsg
+
+      iprowebasgtooutbound7:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          FromPort: '8585'
+          ToPort: '8585'
+          DestinationSecurityGroupId:
+            Ref: privateelb
+
+      iprowebasgtooutbound8:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          FromPort: '5555'
+          ToPort: '5555'
+          DestinationSecurityGroupId:
+            Ref: iproappsg
+
+      iprowebasgtooutbound9:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iprowebsg
+          IpProtocol: tcp
+          FromPort: '1526'
+          ToPort: '1528'
+          DestinationSecurityGroupId:
+            Ref: iprodbsg
+
+      iproappsgingress1:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iproappsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: iprowebsg
+          ToPort: '8585'
+          FromPort: '8585'
+
+      iproappsgingress2:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iproappsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: privateelb
+          ToPort: '8585'
+          FromPort: '8585'
+
+      iproappsgingress3:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iproappsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: iprowebsg
+          ToPort: '5555'
+          FromPort: '5555'
+
+      iproappsgingress4:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iproappsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: privateelb
+          ToPort: '5555'
+          FromPort: '5555'
+
+      iproappsgtooutbound2:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iproappsg
+          IpProtocol: tcp
+          FromPort: '5555'
+          ToPort: '5555'
+          CidrIp: '0.0.0.0/0'
+
+      iproappsgtooutbound3:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iproappsg
+          IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          DestinationSecurityGroupId:
+            Ref: iprowebsg
+
+      iproappsgtooutbound4:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iproappsg
+          IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          DestinationSecurityGroupId:
+            Ref: iprowebsg
+
+      iproappsgtooutbound5:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iproappsg
+          IpProtocol: tcp
+          FromPort: '1526'
+          ToPort: '1528'
+          DestinationSecurityGroupId:
+            Ref: iprodbsg
+
+      iproapp2sgingress1:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iproapp2sg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: iprowebsg
+          ToPort: '15000'
+          FromPort: '15000'
+
+      iproapp2sgingress2:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iproapp2sg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: privateelb
+          ToPort: '15000'
+          FromPort: '15000'
+
+      iproapp2sgingress3:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iproapp2sg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: iprowebsg
+          ToPort: '8006'
+          FromPort: '8006'
+
+      iproapp2sgtooutbound1:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iproapp2sg
+          IpProtocol: tcp
+          FromPort: '1526'
+          ToPort: '1528'
+          DestinationSecurityGroupId:
+            Ref: iprodbsg
+
+      iprodbsgingress1:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iprodbsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: iprowebsg
+          FromPort: '1526'
+          ToPort: '1528'
+
+      iprodbsgingress2:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iprodbsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: iproappsg
+          FromPort: '1526'
+          ToPort: '1528'
+
+      iprodbsgingress3:
+        Type: AWS::EC2::SecurityGroupIngress
+        Properties:
+          GroupId:
+            Ref: iprodbsg
+          IpProtocol: tcp
+          SourceSecurityGroupId:
+            Ref: iproapp2sg
+          FromPort: '1526'
+          ToPort: '1528'
+
+      iprodbsgtooutbound1:
+        Type: AWS::EC2::SecurityGroupEgress
+        Properties:
+          GroupId:
+            Ref: iprodbsg
+          IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          DestinationSecurityGroupId:
+            Ref: iprowebsg
+
